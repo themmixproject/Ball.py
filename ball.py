@@ -22,6 +22,7 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 red = (255, 0, 0)
 
+counter = 0
 
 # setup window
 window = pygame.display.set_mode([winWidth, winHeight])
@@ -65,7 +66,6 @@ mouse = {
     "y": 0
 }
 
-
 def updateBall(dt):
     global verticalSpeed, friction, gravity
 
@@ -89,34 +89,26 @@ def updateBall(dt):
     window.blit(temp,( ball["x"], ball["y"]))
     
     
-    
+def checkBallCollision():
+    mouse["x"], mouse["y"]= pygame.mouse.get_pos()
 
-counter = 0
+    if (mouse["x"] - ( ball["x"] + ball["radius"] ) < ball["radius"] and
+        mouse["x"] - ( ball["x"] + ball["radius"] ) > -ball["radius"] and
+        mouse["y"] - ( ball["y"] + ball["radius"] ) < ball["radius"] and
+        mouse["y"] - ( ball["y"] + ball["radius"] ) > -ball["radius"]):
+            ball["img"] = pygame.image.load("circ_test.png")
+    else:
+        ball["img"] = pygame.image.load("circ.png")
+
+
 def eventHandler(event):
     global verticalSpeed, counter
     if event.type == pygame.QUIT:
         print("quit " + str(event))
         pygame.quit()
         quit()
-    if event.type == pygame.MOUSEMOTION:
-        mouse["x"] = event.pos[0]
-        mouse["y"] = event.pos[1]
-        print( mouse["x"] - (ball["x"] + ball["radius"]) )
-
-
-
-        if mouse["x"] - (ball["x"] + ball["radius"] ) < ball["radius"] and mouse["x"] - (ball["x"] + ball["radius"] ) > -ball["radius"] and mouse["y"] - (ball["y"] + ball["radius"]) < ball["radius"] and mouse["y"] - (ball["y"] + ball["radius"]) > -ball["radius"]:
-                ball["img"] = pygame.image.load("circ_test.png")
-        else:
-            ball["img"] = pygame.image.load("circ.png")
-
-        # print("True %d" % counter)
-        # counter+=1
-        
-
-
+    
     mouseButton = pygame.mouse.get_pressed()
-    # print(event.type)
     if mouseButton[0] == 1:
         pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
         verticalSpeed = 0.01
@@ -134,9 +126,9 @@ def core():
         for event in pygame.event.get():
             eventHandler(event)
             # print(str(event))
+        checkBallCollision()
 	#game logic
         updateBall(dt)
-
 	#Draw stuff
 
         # print(dt)
