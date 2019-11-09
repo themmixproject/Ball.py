@@ -39,6 +39,7 @@ center["x"], center["y"] = map( lambda x : int(x/2), pygame.display.get_surface(
 
 # ball coordinates
 
+# TO FUTURE STEVEN IMPROVE THIS
 # TO MORE AWAKE STEVEN IMPROVE THIS
 ball = {
     "x": center["x"],
@@ -49,7 +50,10 @@ ball = {
     "width": pygame.image.load("circ.png").get_size()[0],
     "height": pygame.image.load("circ.png").get_size()[1],
     "diameter": pygame.image.load("circ.png").get_size()[0],
-    "radius": pygame.image.load("circ.png").get_size()[0]/2
+    "radius": pygame.image.load("circ.png").get_size()[0]/2,
+    "ballCollision": False,
+    "ballGrab": False,
+    "mouseButton": False
 }
 
 print(ball)
@@ -74,13 +78,21 @@ def updateBall(dt):
     pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
 
     # adds gravity and checks if it hit the bottom
-    if ball["y"] + ball["height"] + verticalSpeed > 500:
-        verticalSpeed = -verticalSpeed * friction
-    else:
-        verticalSpeed += gravity
+    
+    # if ball["y"] + ball["height"] + verticalSpeed > 500:
+    #     verticalSpeed = -verticalSpeed * friction
+    # else:
+    #     verticalSpeed += gravity
 
-    # posx += dirx * speed * deltatime
-    ball["y"] += 1 * verticalSpeed * dt
+    
+    # //IMP posx += dirx * speed * deltatime
+    # ball["y"] += 1 * verticalSpeed * dt
+
+
+    # sets ball position to mouse position
+    if ball["ballCollision"] == True and ball["ballGrab"] == True or ball["mouseButton"] == True:
+        ball["x"] = mouse["x"] - ball["radius"]
+        ball["y"] = mouse["y"] - ball["radius"]
 
     temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
     temp.blit(ball["img"], (0, 0))
@@ -96,8 +108,10 @@ def checkBallCollision():
         mouse["x"] - ( ball["x"] + ball["radius"] ) > -ball["radius"] and
         mouse["y"] - ( ball["y"] + ball["radius"] ) < ball["radius"] and
         mouse["y"] - ( ball["y"] + ball["radius"] ) > -ball["radius"]):
+            ball["ballCollision"] = True
             ball["img"] = pygame.image.load("circ_test.png")
     else:
+        ball["ballCollision"] = False
         ball["img"] = pygame.image.load("circ.png")
 
 
@@ -110,9 +124,19 @@ def eventHandler(event):
     
     mouseButton = pygame.mouse.get_pressed()
     if mouseButton[0] == 1:
-        pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
-        verticalSpeed = 0.01
-        ball["y"] = 250
+
+        # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
+        # verticalSpeed = 0.01
+        # ball["y"] = 250
+
+        if ball["ballCollision"] == True:
+            ball["ballGrab"] = True
+            ball["mouseButton"] = True
+    elif mouseButton[0] == 0:
+        ball["ballGrab"] = False
+        ball["mouseButton"] = False
+    print(ball["ballGrab"])
+
 
 
 def core():
