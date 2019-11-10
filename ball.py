@@ -1,16 +1,3 @@
-# if (ball["y"] + (ball["width"]/2) + verticalSpeed) > 500:
-#    verticalSpeed = -verticalSpeed * friction
-# else:
-#    verticalSpeed += gravity
-
-# print(verticalSpeed)
-
-# TO MORE AWAKE STEVEN
-# VERTICAL VELOCITY IS A BIT QUESTIONABLE
-# ADD HORIZONTAL TOMMORROW
-
-
-
 
 # imports
 import pygame
@@ -84,44 +71,30 @@ mouse = {
 def updateBall(dt):
     global friction, gravity
 
-
     # "deletes" old ball
     pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
 
-    # adds gravity and checks if it hit the bottom
-    
-
-    
-
-    
     # //IMP posx += dirx * speed * deltatime
     # ball["y"] += 1 * verticalSpeed * dt
-
-    # sets ball position to mouse position
     if ball["ballCollision"] == True and ball["ballGrab"] == True or ball["mouseButton"] == True:
         ball["x"] = mouse["x"] - ball["radius"]
         ball["y"] = mouse["y"] - ball["radius"]
 
     else:
-        # print( ball["y"])
-        # print(ball["ballSpeedVertical"])
-        if (ball["y"] + ball["height"] + ball["ballSpeedVertical"] > 500 or ball["y"] < 0):
-            # if ( ball["y"] + ball["height"] + ball["ballSpeedVertical"] ) > 500:
-                # print("ball went over bottom")
-            # elif( ball["y"] < 0 ):
-                # print("ball went over top")
-            ball["ballSpeedVertical"] = -ball["ballSpeedVertical"] * friction
 
+        if (ball["y"] + ball["height"] + ball["ballSpeedVertical"] > winHeight or ball["y"] + ball["ballSpeedVertical"] < 0):
+            ball["ballSpeedVertical"] = -ball["ballSpeedVertical"] * friction
         else:
             ball["ballSpeedVertical"] += gravity
         
         ball["y"] += 1 * ball["ballSpeedVertical"] * dt
     
         if ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth:
+
             ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
 
         elif ball["x"] + ball["ballSpeedHorizontal"] < 0:
-            # print(ball["x"] - ball["ballSpeedHorizontal"])
+
             ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
 
         ball["x"] += 1 * ball["ballSpeedHorizontal"] * dt
@@ -134,9 +107,6 @@ def updateBall(dt):
     
     
 def checkBallCollision():
-
-    # print(pygame.mouse.get_rel())
-
 
     mouse["x"], mouse["y"] = pygame.mouse.get_pos()
 
@@ -161,31 +131,19 @@ def eventHandler(event):
     mouseButton = pygame.mouse.get_pressed()
     if mouseButton[0] == 1:
 
-        # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
-        # verticalSpeed = 0.01
-        # ball["y"] = 250
-
         if ball["ballCollision"] == True:
             ball["ballGrab"] = True
             ball["mouseButton"] = True
             mouse["relX"], mouse["relY"] = pygame.mouse.get_rel()
 
     elif mouseButton[0] == 0 and ball["ballGrab"] == True:
-        print("rel-x: " + str(mouse["relX"]) + " rel-y: " + str(mouse["relY"]) +  " pygame mouse rel: " + str(pygame.mouse.get_rel()))
+        # print("rel-x: " + str(mouse["relX"]) + " rel-y: " + str(mouse["relY"]) +  " pygame mouse rel: " + str(pygame.mouse.get_rel()))
         ball["ballGrab"] = False
         ball["mouseButton"] = False
         if(ball["mouseButton"] == False):
-            # print("Ball is thrown" + str(counter))
-            # counter+=1
 
-            
             ball["ballSpeedVertical"] = mouse["relY"] * 0.08
             ball["ballSpeedHorizontal"] = mouse["relX"] * 0.08
-            # print("vertical: %d horizontal: %d" % ball["ballSpeedVertical"], ball["ballSpeedHorizontal"])
-            # print("vertical: " + str(ball["ballSpeedVertical"]) + " horizontal: " + str(ball["ballSpeedHorizontal"]))
-
-        # print(ball["ballSpeedVertical"])
-
 
 
 
