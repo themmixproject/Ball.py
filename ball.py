@@ -1,3 +1,22 @@
+#
+# TO MORE AWAKE STEVEN
+# 
+# - REPLACE BALL HEIGHT AND WITH WITH "DIAMETER"
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#  asd
+
+
+
 
 # imports
 import pygame
@@ -77,8 +96,21 @@ def updateBall(dt):
     # //IMP posx += dirx * speed * deltatime
     # ball["y"] += 1 * verticalSpeed * dt
     if ball["ballCollision"] == True and ball["ballGrab"] == True or ball["mouseButton"] == True:
+        # if(ball["x"] > 0 and ball["x"] + ball["diameter"] < winWidth and ball["y"] > 0 and ball["y"] + ball["height"] < winHeight):
         ball["x"] = mouse["x"] - ball["radius"]
         ball["y"] = mouse["y"] - ball["radius"]
+
+        if ball["x"] <= 0:
+            ball["x"] = 0
+        elif ball["x"] + ball["diameter"] >= winWidth:
+            ball["x"] = winWidth - ball["diameter"]
+        if ball["y"] <= 0:
+            ball["y"] = 0
+        elif ball["y"] + ball["diameter"] >= winHeight:
+            ball["y"] = winWidth - ball["diameter"]
+        
+            
+    
 
     else:
 
@@ -137,13 +169,25 @@ def eventHandler(event):
             mouse["relX"], mouse["relY"] = pygame.mouse.get_rel()
 
     elif mouseButton[0] == 0 and ball["ballGrab"] == True:
-        # print("rel-x: " + str(mouse["relX"]) + " rel-y: " + str(mouse["relY"]) +  " pygame mouse rel: " + str(pygame.mouse.get_rel()))
+        print("rel-x: " + str(mouse["relX"]) + " rel-y: " + str(mouse["relY"]) +  " pygame mouse rel: " + str(pygame.mouse.get_rel()))
         ball["ballGrab"] = False
         ball["mouseButton"] = False
         if(ball["mouseButton"] == False):
 
             ball["ballSpeedVertical"] = mouse["relY"] * 0.08
             ball["ballSpeedHorizontal"] = mouse["relX"] * 0.08
+
+        if ball["x"] <= 0:
+            ball["ballSpeedHorizontal"] = 0
+            ball["ballSpeedVertical"] = 0
+        elif ball["x"] + ball["diameter"] >= winWidth:
+            ball["ballSpeedHorizontal"] = 0
+            ball["ballSpeedVertical"] = 0
+        if ball["y"] <= 0:
+            ball["ballSpeedVertical"] = 0
+        elif ball["y"] + ball["diameter"] >= winHeight:
+            ball["ballSpeedVertical"] = 0
+        
 
 
 
@@ -157,8 +201,10 @@ def core():
         # AS IN, MAYBE JUST INCLUDE THE CLICK EVENTS
         for event in pygame.event.get():
             eventHandler(event)
+            
             # print(str(event))
         checkBallCollision()
+        
 	#game logic
         # print(ball["y"])
         updateBall(dt)
