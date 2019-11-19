@@ -3,7 +3,7 @@
 # 
 # - REPLACE BALL HEIGHT AND WITH WITH "DIAMETER"
 # 
-# 
+# - Make a limit for the sound on low speeds ;P
 # 
 # 
 # 
@@ -26,7 +26,11 @@ from pygame import gfxdraw
 import time
 import random
 
+pygame.mixer.pre_init(44100, -16, 2, 2048)
+pygame.mixer.init()
 pygame.init()
+
+pygame.mixer.set_num_channels(360)
 
 winHeight = 500
 winWidth = 500
@@ -57,7 +61,7 @@ center["x"], center["y"] = map( lambda x : int(x/2), pygame.display.get_surface(
 ball = {
     "x": center["x"],
     "y": center["y"],
-    "radius": 30,
+    "radius": 30,# Look at this
     "img": pygame.image.load("circ.png"),
     "size": pygame.image.load("circ.png").get_size(),
     "width": pygame.image.load("circ.png").get_size()[0],
@@ -87,6 +91,11 @@ mouse = {
     "relY": 0
 }
 
+bounce = pygame.mixer.Sound("bounce1.wav")
+
+def playBounce():
+    pygame.mixer.find_channel().play(bounce)
+
 def updateBall(dt):
     global friction, gravity
 
@@ -114,22 +123,42 @@ def updateBall(dt):
 
     else:
 
-        if (ball["y"] + ball["height"] + ball["ballSpeedVertical"] > winHeight or ball["y"] + ball["ballSpeedVertical"] < 0):
+        if (ball["y"] + ball["height"] + ball["ballSpeedVertical"] > winHeight or
+            ball["y"] + ball["ballSpeedVertical"] < 0):
             ball["ballSpeedVertical"] = -ball["ballSpeedVertical"] * friction
+
+            print(ball["ballSpeedVertical"])
+
+            if(ball["ballSpeedVertical"] > 0.001):
+            
+                playBounce()
+
         else:
             ball["ballSpeedVertical"] += gravity
         
-        ball["y"] += 1 * ball["ballSpeedVertical"] * dt
+        # ball["y"] += 1 * ball["ballSpeedVertical"] * dt
     
-        if ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth:
+        if (ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth or ball["x"] + ball["ballSpeedHorizontal"] < 0):
 
             ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
 
-        elif ball["x"] + ball["ballSpeedHorizontal"] < 0:
+            # print(ball["ballSpeedVertical"])
 
-            ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
+            if(ball["ballSpeedHorizontal"] > 0.001):
+            
+                playBounce()
 
-        ball["x"] += 1 * ball["ballSpeedHorizontal"] * dt
+        # elif ball["x"] + ball["ballSpeedHorizontal"] < 0:
+
+        #     ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
+
+        #     playBounce()
+
+        print("ball y: " + str(ball["y"]) + " ball x: " + str(ball["x"]))
+
+        ball["y"] += ball["ballSpeedVertical"] * dt
+
+        ball["x"] += ball["ballSpeedHorizontal"] * dt
 
     temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
     temp.blit(ball["img"], (0, 0))
@@ -176,6 +205,9 @@ def eventHandler(event):
 
             ball["ballSpeedVertical"] = mouse["relY"] * 0.08
             ball["ballSpeedHorizontal"] = mouse["relX"] * 0.08
+
+            bounce.play()
+
 
         if ball["x"] <= 0:
             ball["ballSpeedHorizontal"] = 0
