@@ -4,7 +4,7 @@
 # - REPLACE BALL HEIGHT AND WITH WITH "DIAMETER"
 # 
 # - Make a limit for the sound on low speeds ;P
-# 
+# - So, a way to make multiple sounds play on one channel is to let it stop playing the current sound
 # 
 # 
 # 
@@ -26,11 +26,15 @@ from pygame import gfxdraw
 import time
 import random
 
+
 pygame.mixer.pre_init(44100, -16, 2, 2048)
-pygame.mixer.init()
+pygame.mixer.init(22100, -16, 2, 64)
+# pygame.mixer.init()
 pygame.init()
 
-pygame.mixer.set_num_channels(360)
+# pygame.mixer.init()
+
+pygame.mixer.set_num_channels(2000)
 
 winHeight = 500
 winWidth = 500
@@ -93,8 +97,18 @@ mouse = {
 
 bounce = pygame.mixer.Sound("bounce1.wav")
 
-def playBounce():
-    pygame.mixer.find_channel().play(bounce)
+def playBounce(speed):
+    channel = pygame.mixer.find_channel()
+    channel.set_volume(abs(speed/5))
+    channel.play(bounce)
+    
+    while pygame.mixer.find_channel() is None: 
+        print (pygame.mixer.find_channel)
+    # pygame.mixer.stop()
+    # print(bounce.get_volume())
+    # bounce.set_volume(abs(speed)/5)
+    # pygame.mixer.find_channel().play(bounce)
+    
 
 def updateBall(dt):
     global friction, gravity
@@ -127,15 +141,16 @@ def updateBall(dt):
             ball["y"] + ball["ballSpeedVertical"] < 0):
             ball["ballSpeedVertical"] = -ball["ballSpeedVertical"] * friction
 
-            print(ball["ballSpeedVertical"])
+            # print(ball["ballSpeedVertical"])
 
-            if(ball["ballSpeedVertical"] > 0.001):
-            
-                playBounce()
+            # if(ball["ballSpeedVertical"] > 0.001):
+            if(abs(ball["ballSpeedVertical"]) > 0.06):
+                playBounce(ball["ballSpeedVertical"])
+                print(ball["ballSpeedVertical"])
 
         else:
             ball["ballSpeedVertical"] += gravity
-        
+            
         # ball["y"] += 1 * ball["ballSpeedVertical"] * dt
     
         if (ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth or ball["x"] + ball["ballSpeedHorizontal"] < 0):
@@ -144,9 +159,9 @@ def updateBall(dt):
 
             # print(ball["ballSpeedVertical"])
 
-            if(ball["ballSpeedHorizontal"] > 0.001):
-            
-                playBounce()
+            # if(ball["ballSpeedHorizontal"] > 0.001):
+            # if(bounce.get_volume() > 0.0):
+            playBounce(ball["ballSpeedHorizontal"])
 
         # elif ball["x"] + ball["ballSpeedHorizontal"] < 0:
 
@@ -154,7 +169,7 @@ def updateBall(dt):
 
         #     playBounce()
 
-        print("ball y: " + str(ball["y"]) + " ball x: " + str(ball["x"]))
+        # print("ball y: " + str(ball["y"]) + " ball x: " + str(ball["x"]))
 
         ball["y"] += ball["ballSpeedVertical"] * dt
 
