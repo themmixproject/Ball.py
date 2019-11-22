@@ -7,8 +7,10 @@
 # - So, a way to make multiple sounds play on one channel is to let it stop playing the current sound
 # 
 # 
-# 
-# 
+# - so, let me do an attempt at explaning how you do the trail:
+# first you need a ball class, just copy the ball variable. Every frame add it to an array
+# and minus the alpha attribute every frame, I hope this works
+
 # 
 # 
 # 
@@ -67,9 +69,9 @@ ball = {
     "y": center["y"],
     "radius": 30,# Look at this
     "img": pygame.image.load("circ.png"),
-    "size": pygame.image.load("circ.png").get_size(),
-    "width": pygame.image.load("circ.png").get_size()[0],
-    "height": pygame.image.load("circ.png").get_size()[1],
+    # "size": pygame.image.load("circ.png").get_size(),
+    # "width": pygame.image.load("circ.png").get_size()[0],
+    # "height": pygame.image.load("circ.png").get_size()[1],
     "diameter": pygame.image.load("circ.png").get_size()[0],
     "radius": pygame.image.load("circ.png").get_size()[0]/2,
     "ballSpeedVertical": 0.01,
@@ -80,6 +82,57 @@ ball = {
 }
 
 print(ball)
+
+def easeLinear(t, b, c, d):
+    return c*t/d + b
+
+class trailBall:
+    def __init__(this, x, y):
+        this.x = x
+        this.y = y
+        this.alpha = 1.
+        this.currentIteration = 0
+        this.iterations = 15
+
+
+    def update(this):
+        # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+        # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+        temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
+
+        
+        imageCopy = ball["img"].copy()
+        # this works on images with per pixel alpha too
+        imageCopy.fill((255, 255, 255, this.alpha), None, pygame.BLEND_RGBA_MULT)
+
+
+        temp.blit(imageCopy, (0, 0))
+        temp.convert_alpha()
+        # temp.set_alpha(this.alpha)
+
+        # print(temp.get_alpha())
+        window.blit(temp,(this.x, this.y))
+
+        this.alpha = easeLinear(this.currentIteration, 255, -255, this.iterations)
+        # this.currentIteration+=1
+    def printStuff(this):
+        print("trailBall class has been called")
+    def draw(this):
+        # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+
+        temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
+        
+        imageCopy = ball["img"].copy()
+        # this works on images with per pixel alpha too
+        # imageCopy.fill((255, 255, 255), None, pygame.BLEND_RGBA_MULT)
+        
+        temp.blit(imageCopy, (0, 0))
+        temp.convert_alpha()
+
+        window.blit(temp,(this.x, this.y))
+
+
+trailBallArr = []
 
 gravity = 0.001
 
@@ -114,7 +167,31 @@ def updateBall(dt):
     global friction, gravity
 
     # "deletes" old ball
-    pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
+    # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
+
+    window.fill(black)
+    
+    for val in reversed(trailBallArr):
+        # print(val)
+        if(val.currentIteration <= val.iterations):
+            val.update()
+            val.currentIteration += 1
+        else:
+            # print(trailBallArr)
+            index = trailBallArr.index(val)
+            
+            # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+            trailBallArr.remove(val)
+
+            trailBallArr[index-2].draw()
+
+
+            # print(trailBallArr)
+
+
+    newTrailBall = trailBall(ball["x"], ball["y"])
+    trailBallArr.append(newTrailBall)
+    newTrailBall.update()
 
     # //IMP posx += dirx * speed * deltatime
     # ball["y"] += 1 * verticalSpeed * dt
@@ -137,39 +214,25 @@ def updateBall(dt):
 
     else:
 
-        if (ball["y"] + ball["height"] + ball["ballSpeedVertical"] > winHeight or
+        if (ball["y"] + ball["diameter"] + ball["ballSpeedVertical"] > winHeight or
             ball["y"] + ball["ballSpeedVertical"] < 0):
             ball["ballSpeedVertical"] = -ball["ballSpeedVertical"] * friction
 
-            # print(ball["ballSpeedVertical"])
-
-            # if(ball["ballSpeedVertical"] > 0.001):
             if(abs(ball["ballSpeedVertical"]) > 0.06):
+
                 playBounce(ball["ballSpeedVertical"])
-                print(ball["ballSpeedVertical"])
+
+                # print(ball["ballSpeedVertical"])
 
         else:
             ball["ballSpeedVertical"] += gravity
-            
-        # ball["y"] += 1 * ball["ballSpeedVertical"] * dt
     
-        if (ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth or ball["x"] + ball["ballSpeedHorizontal"] < 0):
+        if (ball["x"] + ball["diameter"] + ball["ballSpeedHorizontal"] > winWidth
+            or ball["x"] + ball["ballSpeedHorizontal"] < 0):
 
             ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
 
-            # print(ball["ballSpeedVertical"])
-
-            # if(ball["ballSpeedHorizontal"] > 0.001):
-            # if(bounce.get_volume() > 0.0):
             playBounce(ball["ballSpeedHorizontal"])
-
-        # elif ball["x"] + ball["ballSpeedHorizontal"] < 0:
-
-        #     ball["ballSpeedHorizontal"] = -ball["ballSpeedHorizontal"] * friction
-
-        #     playBounce()
-
-        # print("ball y: " + str(ball["y"]) + " ball x: " + str(ball["x"]))
 
         ball["y"] += ball["ballSpeedVertical"] * dt
 
