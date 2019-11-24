@@ -92,7 +92,7 @@ class trailBall:
         this.y = y
         this.alpha = 1.
         this.currentIteration = 0
-        this.iterations = 15
+        this.iterations = 30
 
 
     def update(this):
@@ -166,32 +166,23 @@ def playBounce(speed):
 def updateBall(dt):
     global friction, gravity
 
+    oldBallX = ball["x"]
+    oldBallY = ball["y"]
+
     # "deletes" old ball
     # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
 
     window.fill(black)
     
-    for val in reversed(trailBallArr):
-        # print(val)
-        if(val.currentIteration <= val.iterations):
-            val.update()
-            val.currentIteration += 1
-        else:
-            # print(trailBallArr)
-            index = trailBallArr.index(val)
-            
-            # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
-            trailBallArr.remove(val)
-
-            trailBallArr[index-2].draw()
+    
 
 
             # print(trailBallArr)
 
 
-    newTrailBall = trailBall(ball["x"], ball["y"])
-    trailBallArr.append(newTrailBall)
-    newTrailBall.update()
+    # newTrailBall = trailBall(ball["x"], ball["y"])
+    # trailBallArr.append(newTrailBall)
+    # newTrailBall.update()
 
     # //IMP posx += dirx * speed * deltatime
     # ball["y"] += 1 * verticalSpeed * dt
@@ -237,6 +228,25 @@ def updateBall(dt):
         ball["y"] += ball["ballSpeedVertical"] * dt
 
         ball["x"] += ball["ballSpeedHorizontal"] * dt
+
+    if(ball["x"]!=oldBallX or ball["y"]!=oldBallY):
+            newTrailBall = trailBall(ball["x"], ball["y"])
+            trailBallArr.append(newTrailBall)
+            newTrailBall.update()
+            # print("newBall")
+    for val in reversed(trailBallArr):
+        # print(val)
+        if(val.currentIteration <= val.iterations):
+            val.update()
+            val.currentIteration += 1
+        else:
+            # print(trailBallArr)
+            # index = trailBallArr.index(val)
+            
+            # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+            trailBallArr.remove(val)
+
+            # trailBallArr[index-1].draw()
 
     temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
     temp.blit(ball["img"], (0, 0))
