@@ -5,17 +5,16 @@
 # 
 # - Make a limit for the sound on low speeds ;P
 # - So, a way to make multiple sounds play on one channel is to let it stop playing the current sound
+# - fix the bug that if you move the window
+# the ball doesn't go off screen
+# - fix the bug that somehow the ball sometimes goes
+# off screen (just copy the other force fix from the ball drag function)
+# - maybe an option to split the coordinate calculation
+#  and the drawing functions
 # 
 # 
-# - so, let me do an attempt at explaning how you do the trail:
-# first you need a ball class, just copy the ball variable. Every frame add it to an array
-# and minus the alpha attribute every frame, I hope this works
-
 # 
-# 
-# 
-# 
-#  asd
+# asd
 
 
 
@@ -87,15 +86,15 @@ def easeLinear(t, b, c, d):
     return c*t/d + b
 
 class trailBall:
-    def __init__(this, x, y):
-        this.x = x
-        this.y = y
-        this.alpha = 1.
-        this.currentIteration = 0
-        this.iterations = 30
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.alpha = 1.
+        self.currentIteration = 0
+        self.iterations = 15
 
 
-    def update(this):
+    def update(self):
         # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
         # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
         temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
@@ -103,7 +102,7 @@ class trailBall:
         
         imageCopy = ball["img"].copy()
         # this works on images with per pixel alpha too
-        imageCopy.fill((255, 255, 255, this.alpha), None, pygame.BLEND_RGBA_MULT)
+        imageCopy.fill((255, 255, 255, self.alpha), None, pygame.BLEND_RGBA_MULT)
 
 
         temp.blit(imageCopy, (0, 0))
@@ -111,13 +110,13 @@ class trailBall:
         # temp.set_alpha(this.alpha)
 
         # print(temp.get_alpha())
-        window.blit(temp,(this.x, this.y))
+        window.blit(temp,(self.x, self.y))
 
-        this.alpha = easeLinear(this.currentIteration, 255, -255, this.iterations)
+        self.alpha = easeLinear(self.currentIteration, 255, -255, self.iterations)
         # this.currentIteration+=1
-    def printStuff(this):
+    def printStuff(self):
         print("trailBall class has been called")
-    def draw(this):
+    def draw(self):
         # pygame.draw.rect(window, black, (this.x, this.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
 
         temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
@@ -152,7 +151,7 @@ bounce = pygame.mixer.Sound("bounce1.wav")
 
 def playBounce(speed):
     channel = pygame.mixer.find_channel()
-    channel.set_volume(abs(speed/5))
+    # channel.set_volume(abs(speed/5))
     channel.play(bounce)
     
     while pygame.mixer.find_channel() is None: 
@@ -172,12 +171,12 @@ def updateBall(dt):
     # "deletes" old ball
     # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
 
-    window.fill(black)
+    
     
     
 
 
-            # print(trailBallArr)
+    # print(trailBallArr)
 
 
     # newTrailBall = trailBall(ball["x"], ball["y"])
@@ -229,7 +228,13 @@ def updateBall(dt):
 
         ball["x"] += ball["ballSpeedHorizontal"] * dt
 
-    if(ball["x"]!=oldBallX or ball["y"]!=oldBallY):
+    if  (
+            ball["x"]!=oldBallX or ball["y"]!=oldBallY
+            and
+            ball["x"] > oldBallX or ball["x"] < oldBallX
+            or
+            ball["y"] > oldBallY or ball["y"] < oldBallY
+        ):
             newTrailBall = trailBall(ball["x"], ball["y"])
             trailBallArr.append(newTrailBall)
             newTrailBall.update()
@@ -327,9 +332,11 @@ def core():
         
 	#game logic
         # print(ball["y"])
-        updateBall(dt)
+        
 	#Draw stuff
-
+        window.fill(black)
+        
+        updateBall(dt)
         # print(dt)
 
         pygame.display.update()
