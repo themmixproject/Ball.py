@@ -183,9 +183,6 @@ def updateBall(dt):
             ball["y"] = 0
         elif ball["y"] + ball["diameter"] >= winHeight:
             ball["y"] = winWidth - ball["diameter"]
-        
-            
-    
 
     else:
 
@@ -212,39 +209,6 @@ def updateBall(dt):
         ball["y"] += ball["ballSpeedVertical"] * dt
 
         ball["x"] += ball["ballSpeedHorizontal"] * dt
-
-    # if  (
-    #         ball["x"]!=oldBallX or ball["y"]!=oldBallY
-    #         and
-    #         ball["x"] > oldBallX or ball["x"] < oldBallX
-    #         or
-    #         ball["y"] > oldBallY or ball["y"] < oldBallY
-    #     ):
-    #         newTrailBall = trailBall(ball["x"], ball["y"])
-    #         trailBallArr.append(newTrailBall)
-    #         newTrailBall.update()
-    #         # print("newBall")
-    # for val in reversed(trailBallArr):
-    #     # print(val)
-        
-
-    #     if(val.currentIteration <= val.iterations):
-    #         val.update()
-    #         val.currentIteration += 1
-    #     else:
-    #         # print(trailBallArr)
-    #         # index = trailBallArr.index(val)
-            
-    #         # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
-    #         trailBallArr.remove(val)
-
-            # trailBallArr[index-1].draw()
-    
-
-    # updateTrail()
-
-    # drawBall()
-    # drawTrail()
     
 
 
@@ -254,6 +218,7 @@ def drawBall():
     temp.convert_alpha()
 
     window.blit(temp,( ball["x"], ball["y"]))
+
 
 def updateTrail():
      if  (
@@ -275,26 +240,6 @@ def drawTrail():
             val.currentIteration += 1
         else:
             trailBallArr.remove(val)
-
-
-
-
-# def updateBallCoordinates(dt):
-#     # print("ballCoordinates updated!")
-    
-#     pass
-
-# def updateTrailCoordinates():
-#     # print("trailCoorindates updated!")
-#     pass
-
-
-
-# def drawBall():
-#     pass
-
-# def drawTrail():
-#     pass
 
 
 
@@ -350,7 +295,6 @@ def eventHandler(event):
             ball["ballSpeedVertical"] = 0
         elif ball["y"] + ball["diameter"] >= winHeight:
             ball["ballSpeedVertical"] = 0
-        
 
 
 
@@ -380,8 +324,6 @@ def core():
         drawBall()
 
         drawTrail()
-
-        # print(dt)
 
         pygame.display.update()
         dt = clock.tick()
