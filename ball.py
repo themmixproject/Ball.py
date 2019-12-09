@@ -133,7 +133,7 @@ class trailBall:
 
 trailBallArr = []
 
-gravity = 0.001
+gravity = 0.003
 
 friction = 0.89
 
@@ -168,23 +168,6 @@ def updateBall(dt):
     oldBallX = ball["x"]
     oldBallY = ball["y"]
 
-    # "deletes" old ball
-    # pygame.draw.rect(window, black, (ball["x"], ball["y"], ball["img"].get_size()[0], ball["img"].get_size()[1]))
-
-    
-    
-    
-
-
-    # print(trailBallArr)
-
-
-    # newTrailBall = trailBall(ball["x"], ball["y"])
-    # trailBallArr.append(newTrailBall)
-    # newTrailBall.update()
-
-    # //IMP posx += dirx * speed * deltatime
-    # ball["y"] += 1 * verticalSpeed * dt
     if ball["ballCollision"] == True and ball["ballGrab"] == True or ball["mouseButton"] == True:
         # if(ball["x"] > 0 and ball["x"] + ball["diameter"] < winWidth and ball["y"] > 0 and ball["y"] + ball["height"] < winHeight):
         ball["x"] = mouse["x"] - ball["radius"]
@@ -228,7 +211,50 @@ def updateBall(dt):
 
         ball["x"] += ball["ballSpeedHorizontal"] * dt
 
-    if  (
+    # if  (
+    #         ball["x"]!=oldBallX or ball["y"]!=oldBallY
+    #         and
+    #         ball["x"] > oldBallX or ball["x"] < oldBallX
+    #         or
+    #         ball["y"] > oldBallY or ball["y"] < oldBallY
+    #     ):
+    #         newTrailBall = trailBall(ball["x"], ball["y"])
+    #         trailBallArr.append(newTrailBall)
+    #         newTrailBall.update()
+    #         # print("newBall")
+    # for val in reversed(trailBallArr):
+    #     # print(val)
+        
+
+    #     if(val.currentIteration <= val.iterations):
+    #         val.update()
+    #         val.currentIteration += 1
+    #     else:
+    #         # print(trailBallArr)
+    #         # index = trailBallArr.index(val)
+            
+    #         # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
+    #         trailBallArr.remove(val)
+
+            # trailBallArr[index-1].draw()
+    
+
+    updateTrail(oldBallX, oldBallY)
+
+    drawBall()
+    drawTrail()
+    
+
+
+def drawBall():
+    temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
+    temp.blit(ball["img"], (0, 0))
+    temp.convert_alpha()
+
+    window.blit(temp,( ball["x"], ball["y"]))
+
+def updateTrail(oldBallX, oldBallY):
+     if  (
             ball["x"]!=oldBallX or ball["y"]!=oldBallY
             and
             ball["x"] > oldBallX or ball["x"] < oldBallX
@@ -237,29 +263,39 @@ def updateBall(dt):
         ):
             newTrailBall = trailBall(ball["x"], ball["y"])
             trailBallArr.append(newTrailBall)
-            newTrailBall.update()
+            # newTrailBall.update()
             # print("newBall")
+def drawTrail():
     for val in reversed(trailBallArr):
         # print(val)
         if(val.currentIteration <= val.iterations):
             val.update()
             val.currentIteration += 1
         else:
-            # print(trailBallArr)
-            # index = trailBallArr.index(val)
-            
-            # pygame.draw.rect(window, black, (val.x, val.y, ball["img"].get_size()[0], ball["img"].get_size()[1]))
             trailBallArr.remove(val)
 
-            # trailBallArr[index-1].draw()
 
-    temp = pygame.Surface(ball["img"].get_rect().size, pygame.SRCALPHA)
-    temp.blit(ball["img"], (0, 0))
-    temp.convert_alpha()
 
-    window.blit(temp,( ball["x"], ball["y"]))
+
+# def updateBallCoordinates(dt):
+#     # print("ballCoordinates updated!")
     
-    
+#     pass
+
+# def updateTrailCoordinates():
+#     # print("trailCoorindates updated!")
+#     pass
+
+
+
+# def drawBall():
+#     pass
+
+# def drawTrail():
+#     pass
+
+
+
 def checkBallCollision():
 
     mouse["x"], mouse["y"] = pygame.mouse.get_pos()
@@ -331,12 +367,20 @@ def core():
         checkBallCollision()
         
 	#game logic
-        # print(ball["y"])
+
+        # updateBallCoordinates(dt)
+
+        # updateTrailCoordinates()
         
 	#Draw stuff
         window.fill(black)
         
         updateBall(dt)
+
+        # drawBall()
+
+        # drawTrail()
+
         # print(dt)
 
         pygame.display.update()
