@@ -66,6 +66,8 @@ center["x"], center["y"] = map( lambda x : int(x/2), pygame.display.get_surface(
 ball = {
     "x": center["x"],
     "y": center["y"],
+    "oldX":0,
+    "oldY":0,
     "radius": 30,# Look at this
     "img": pygame.image.load("circ.png"),
     # "size": pygame.image.load("circ.png").get_size(),
@@ -165,8 +167,8 @@ def playBounce(speed):
 def updateBall(dt):
     global friction, gravity
 
-    oldBallX = ball["x"]
-    oldBallY = ball["y"]
+    ball["oldX"] = ball["x"]
+    ball["oldY"] = ball["y"]
 
     if ball["ballCollision"] == True and ball["ballGrab"] == True or ball["mouseButton"] == True:
         # if(ball["x"] > 0 and ball["x"] + ball["diameter"] < winWidth and ball["y"] > 0 and ball["y"] + ball["height"] < winHeight):
@@ -239,10 +241,10 @@ def updateBall(dt):
             # trailBallArr[index-1].draw()
     
 
-    updateTrail(oldBallX, oldBallY)
+    # updateTrail()
 
-    drawBall()
-    drawTrail()
+    # drawBall()
+    # drawTrail()
     
 
 
@@ -253,13 +255,13 @@ def drawBall():
 
     window.blit(temp,( ball["x"], ball["y"]))
 
-def updateTrail(oldBallX, oldBallY):
+def updateTrail():
      if  (
-            ball["x"]!=oldBallX or ball["y"]!=oldBallY
+            ball["x"]!=ball["oldX"] or ball["y"]!=ball["oldY"]
             and
-            ball["x"] > oldBallX or ball["x"] < oldBallX
+            ball["x"] > ball["oldX"] or ball["x"] < ball["oldX"]
             or
-            ball["y"] > oldBallY or ball["y"] < oldBallY
+            ball["y"] > ball["oldY"] or ball["y"] < ball["oldY"]
         ):
             newTrailBall = trailBall(ball["x"], ball["y"])
             trailBallArr.append(newTrailBall)
@@ -368,18 +370,16 @@ def core():
         
 	#game logic
 
-        # updateBallCoordinates(dt)
-
-        # updateTrailCoordinates()
-        
-	#Draw stuff
-        window.fill(black)
-        
         updateBall(dt)
 
-        # drawBall()
+        updateTrail()
+        
+	#Draw stuff
+        window.fill(black)    
 
-        # drawTrail()
+        drawBall()
+
+        drawTrail()
 
         # print(dt)
 
